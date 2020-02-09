@@ -12,62 +12,64 @@
 #include <cairo/cairo.h>
 
 #include <v8.h>
-#include <node.h>
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 
-using namespace v8;
-using namespace node;
+using namespace Napi;
 
-class FrameBuffer : public Nan::ObjectWrap {
-    public:
-        static void Init();
-        static v8::Local<v8::Object> NewInstance(v8::Local<v8::Value> arg, v8::Local<v8::Value> arg2);
-        static NAN_METHOD(New);
-        static NAN_METHOD(Size);
-        static NAN_METHOD(Data);
-        static NAN_METHOD(Clear);
-        static NAN_METHOD(Blit);
-        static NAN_METHOD(Color);
-        static NAN_METHOD(Fill);
-        static NAN_METHOD(Line);
-        static NAN_METHOD(Rect);
-        static NAN_METHOD(Circle);
-        static NAN_METHOD(Font);
-        static NAN_METHOD(Text);
-        static NAN_METHOD(Image);
-        static NAN_METHOD(PatternCreateLinear);
-        static NAN_METHOD(PatternCreateRGB);
-        static NAN_METHOD(PatternAddColorStop);
-        static NAN_METHOD(PatternDestroy);
-        static cairo_t* getDrawingContext(FrameBuffer *obj);
-    private:
-        FrameBuffer(const char *path);
-        ~FrameBuffer();
+class FrameBuffer : public Napi::ObjectWrap<FrameBuffer>
+{
+public:
+    static Napi::Object Init(Napi::Env env, Napi::Object exports);
+    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
+    static Napi::Value New(const Napi::CallbackInfo &info);
+    static Napi::Value Size(const char *whatisthis, const Napi::CallbackInfo &info);
+    static Napi::Value Data(const Napi::CallbackInfo &info);
+    static Napi::Value Clear(const Napi::CallbackInfo &info);
+    static Napi::Value Blit(const Napi::CallbackInfo &info);
+    static Napi::Value Color(const Napi::CallbackInfo &info);
+    static Napi::Value Fill(const Napi::CallbackInfo &info);
+    static Napi::Value Line(const Napi::CallbackInfo &info);
+    static Napi::Value Rect(const Napi::CallbackInfo &info);
+    static Napi::Value Circle(const Napi::CallbackInfo &info);
+    static Napi::Value Font(const Napi::CallbackInfo &info);
+    static Napi::Value Text(const Napi::CallbackInfo &info);
+    static Napi::Value Image(const Napi::CallbackInfo &info);
+    static Napi::Value PatternCreateLinear(const Napi::CallbackInfo &info);
+    static Napi::Value PatternCreateRGB(const Napi::CallbackInfo &info);
+    static Napi::Value PatternAddColorStop(const Napi::CallbackInfo &info);
+    static Napi::Value PatternDestroy(const Napi::CallbackInfo &info);
+    static cairo_t *getDrawingContext(FrameBuffer *obj);
+    ~FrameBuffer();
 
-        static Nan::Persistent<v8::Function> constructor;
-        int fbfd;
-        struct fb_var_screeninfo orig_vinfo;
-        struct fb_var_screeninfo vinfo;
-        struct fb_fix_screeninfo finfo;
-        long int screenSize;
+private:
+    // FrameBuffer(const char *path);
+    FrameBuffer(const Napi::CallbackInfo &info);
 
-        char *bbp;
-        char *fbp;
+    static Napi::FunctionReference constructor;
+    int fbfd;
+    struct fb_var_screeninfo orig_vinfo;
+    struct fb_var_screeninfo vinfo;
+    struct fb_fix_screeninfo finfo;
+    long int screenSize;
 
-        cairo_surface_t *bufferSurface;
-        cairo_surface_t *screenSurface;
+    char *bbp;
+    char *fbp;
 
-        double r, g, b;
+    cairo_surface_t *bufferSurface;
+    cairo_surface_t *screenSurface;
 
-        std::vector<cairo_pattern_t*> pattern;
-        size_t usedPattern;
-        bool usePattern;
+    double r, g, b;
 
-        const char *fontName;
-        double fontSize;
-        bool fontBold;
+    std::vector<cairo_pattern_t *> pattern;
+    size_t usedPattern;
+    bool usePattern;
 
-        bool drawToBuffer;
+    const char *fontName;
+    double fontSize;
+    bool fontBold;
+
+    bool drawToBuffer;
 };
 
 #endif

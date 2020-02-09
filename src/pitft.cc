@@ -1,20 +1,21 @@
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 #include "framebuffer.h"
 
-using namespace v8;
+using namespace Napi;
 
-NAN_METHOD(CreateObject) {
-  Nan::HandleScope scope;
-  info.GetReturnValue().Set(FrameBuffer::NewInstance(info[0], info[1]));
+Napi::Value CreateObject(const Napi::CallbackInfo &info)
+{
+  Napi::Env env = info.Env();
+  Napi::HandleScope scope(env);
+  return FrameBuffer::NewInstance(info);
 }
 
-void InitAll(Handle<Object> exports, Handle<Object> module) {
-  Nan::HandleScope scope;
+Napi::Object InitAll(Napi::Env env, Napi::Object exports)
+{
+  Napi::HandleScope scope(env);
 
-  FrameBuffer::Init();
-
-  module->Set(Nan::New("exports").ToLocalChecked(),
-      Nan::New<FunctionTemplate>(CreateObject)->GetFunction());
+  return FrameBuffer::Init(env, exports);
 }
 
-NODE_MODULE(pitft, InitAll)
+NODE_API_MODULE(pitft, InitAll)
