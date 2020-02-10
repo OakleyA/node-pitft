@@ -4,28 +4,29 @@ using namespace Napi;
 
 Napi::FunctionReference FrameBuffer::constructor;
 
-Napi::Object FrameBuffer::Init(Napi::Env env, Napi::Object exports)
+Napi::Object FrameBuffer::Init(Napi::env env, Napi::Object exports)
 {
     Napi::HandleScope scope(env);
 
-    Napi::Function func = DefineClass(env, "FrameBuffer", {
-                                                              InstanceMethod("size", &FrameBuffer::Size),
-                                                              InstanceMethod("data", &FrameBuffer::Data),
-                                                              InstanceMethod("clear", &FrameBuffer::Clear),
-                                                              InstanceMethod("blit", &FrameBuffer::Blit),
-                                                              InstanceMethod("color", &FrameBuffer::Color),
-                                                              InstanceMethod("fill", &FrameBuffer::Fill),
-                                                              InstanceMethod("line", &FrameBuffer::Line),
-                                                              InstanceMethod("rect", &FrameBuffer::Rect),
-                                                              InstanceMethod("circle", &FrameBuffer::Circle),
-                                                              InstanceMethod("font", &FrameBuffer::Font),
-                                                              InstanceMethod("text", &FrameBuffer::Text),
-                                                              InstanceMethod("image", &FrameBuffer::Image),
-                                                              InstanceMethod("patternCreateLinear", &FrameBuffer::PatternCreateLinear),
-                                                              InstanceMethod("patternCreateRGB", &FrameBuffer::PatternCreateRGB),
-                                                              InstanceMethod("patternAddColorStop", &FrameBuffer::PatternAddColorStop),
-                                                              InstanceMethod("patternDestroy", &FrameBuffer::PatternDestroy),
-                                                          });
+    Napi::Function func = DefineClass(env, "FrameBuffer",
+                                      {
+                                          InstanceMethod("size", &FrameBuffer::Size),
+                                          InstanceMethod("data", &FrameBuffer::Data),
+                                          InstanceMethod("clear", &FrameBuffer::Clear),
+                                          InstanceMethod("blit", &FrameBuffer::Blit),
+                                          InstanceMethod("color", &FrameBuffer::Color),
+                                          InstanceMethod("fill", &FrameBuffer::Fill),
+                                          InstanceMethod("line", &FrameBuffer::Line),
+                                          InstanceMethod("rect", &FrameBuffer::Rect),
+                                          InstanceMethod("circle", &FrameBuffer::Circle),
+                                          InstanceMethod("font", &FrameBuffer::Font),
+                                          InstanceMethod("text", &FrameBuffer::Text),
+                                          InstanceMethod("image", &FrameBuffer::Image),
+                                          InstanceMethod("patternCreateLinear", &FrameBuffer::PatternCreateLinear),
+                                          InstanceMethod("patternCreateRGB", &FrameBuffer::PatternCreateRGB),
+                                          InstanceMethod("patternAddColorStop", &FrameBuffer::PatternAddColorStop),
+                                          InstanceMethod("patternDestroy", &FrameBuffer::PatternDestroy),
+                                      });
 
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
@@ -35,126 +36,76 @@ Napi::Object FrameBuffer::Init(Napi::Env env, Napi::Object exports)
     return exports;
 }
 
-Napi::Object FrameBuffer::NewInstance(const Napi::CallbackInfo &info)
+Napi::Object FrameBuffer::Size(const Napi::CallbackInfo &info)
 {
-    Napi::Env env = info.Env();
-    Napi::EscapableHandleScope scope(env);
-
-    const unsigned argc = 2;
-    Napi::Value argv[argc] = {info[0], info[1]};
-    Napi::Function cons = Napi::Function::New(env, constructor);
-    Napi::Object instance = Napi::Object::New(cons, argc, argv);
-
-    return scope.Escape(instance);
-}
-
-Napi::Value FrameBuffer::New(const Napi::CallbackInfo &info)
-{
-    Napi::Env env = info.Env();
+    Napi::env env = info.Env();
     Napi::HandleScope scope(env);
-
-    std::string path = info[0].ToString().As<Napi::String>());
-    std::string _path = std::string(*path);
-
-    FrameBuffer *obj = new FrameBuffer(_path.c_str());
-    obj->drawToBuffer = info[1].IsUndefined() ? false : info[1].As<Napi::Boolean>().Value();
-
-    obj->Wrap(info.This());
-    return info.This();
-}
-
-Napi::Value FrameBuffer::Size(const char *whatisthis, const Napi::CallbackInfo &info)
-{
-    Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
-
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
-
     Napi::Object sizeObject = Napi::Object::New(env);
 
-    sizeObject.Set("width", obj->vinfo.xres));
-    sizeObject.Set("height", obj->vinfo.yres));
+    sizeObject.Set(Napi::String::New(env, "width"), Napi::Number::New(env, this->vinfo.xres));
+    sizeObject.Set(Napi::String::New(env, "height"), Napi::Number::New(env, this->vinfo.yres));
 
     return sizeObject;
 }
 
-Napi::Value FrameBuffer::Data(const Napi::CallbackInfo &info)
+Napi::Object FrameBuffer::Data(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
-
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
-
-    Napi::Object bufferObject = Napi::Buffer<char>::New(env, obj->fbp, obj->screenSize);
+    Napi::Object bufferObject = Napi::Buffer<char>::New(env, this.->fbp, this->screenSize);
 
     return bufferObject;
 }
 
-Napi::Value FrameBuffer::Clear(const Napi::CallbackInfo &info)
+void FrameBuffer::Clear(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
-
-    cairo_t *cr = getDrawingContext(obj);
+    cairo_t *cr = getDrawingContext(this);
 
     cairo_set_source_rgb(cr, 0, 0, 0);
     cairo_paint(cr);
-
     cairo_destroy(cr);
-
-    return;
 }
 
-Napi::Value FrameBuffer::Blit(const Napi::CallbackInfo &info)
+void FrameBuffer::Blit(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
-
-    if (obj->drawToBuffer)
+    if (this->drawToBuffer)
     {
-        cairo_t *cr = cairo_create(obj->screenSurface);
-        cairo_set_source_surface(cr, obj->bufferSurface, 0, 0);
+        cairo_t *cr = cairo_create(this->screenSurface);
+        cairo_set_source_surface(cr, this->bufferSurface, 0, 0);
         cairo_paint(cr);
-
         cairo_destroy(cr);
     }
-
-    return;
 }
 
-Napi::Value FrameBuffer::Color(const Napi::CallbackInfo &info)
+void FrameBuffer::Color(const Napi::CallbackInfo &info)
 {
-    Napi::Env env = info.Env();
+    Napi::env env = info.Env();
     Napi::HandleScope scope(env);
-
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
 
     if (info[1].IsUndefined())
     {
-        obj->usedPattern = (info[0].As<Napi::Number>().DoubleValue());
-        obj->usePattern = true;
+        this->usedPattern = (info[0].As<Napi::Number>().DoubleValue());
+        this->usePattern = true;
     }
     else
     {
-        obj->r = (info[0].As<Napi::Number>().DoubleValue());
-        obj->g = (info[1].As<Napi::Number>().DoubleValue());
-        obj->b = (info[2].As<Napi::Number>().DoubleValue());
-        obj->usePattern = false;
+        this->r = (info[0].As<Napi::Number>().DoubleValue());
+        this->g = (info[1].As<Napi::Number>().DoubleValue());
+        this->b = (info[2].As<Napi::Number>().DoubleValue());
+        this->usePattern = false;
     }
-
-    return;
 }
 
-Napi::Value FrameBuffer::PatternCreateLinear(const Napi::CallbackInfo &info)
+Napi::Number FrameBuffer::PatternCreateLinear(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
-
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
 
     double x0, y0, x1, y1;
     size_t pos;
@@ -165,8 +116,8 @@ Napi::Value FrameBuffer::PatternCreateLinear(const Napi::CallbackInfo &info)
         y0 = (info[1].As<Napi::Number>().DoubleValue());
         x1 = (info[2].As<Napi::Number>().DoubleValue());
         y1 = (info[3].As<Napi::Number>().DoubleValue());
-        obj->pattern.push_back(cairo_pattern_create_linear(x0, y0, x1, y1));
-        pos = obj->pattern.size() - 1;
+        this->pattern.push_back(cairo_pattern_create_linear(x0, y0, x1, y1));
+        pos = this->pattern.size() - 1;
     }
     else
     {
@@ -176,28 +127,22 @@ Napi::Value FrameBuffer::PatternCreateLinear(const Napi::CallbackInfo &info)
         x1 = (info[3].As<Napi::Number>().DoubleValue());
         y1 = (info[4].As<Napi::Number>().DoubleValue());
 
-        while (obj->pattern.size() <= pos)
-        {
-            obj->pattern.push_back(nullptr);
-        }
+        while (this->pattern.size() <= pos)
+            this->pattern.push_back(nullptr);
 
-        if (obj->pattern[pos] != nullptr)
-        {
-            cairo_pattern_destroy(obj->pattern[pos]);
-        }
+        if (this->pattern[pos] != nullptr)
+            cairo_pattern_destroy(this->pattern[pos]);
 
-        obj->pattern[pos] = cairo_pattern_create_linear(x0, y0, x1, y1);
+        this->pattern[pos] = cairo_pattern_create_linear(x0, y0, x1, y1);
     }
 
-    return pos;
+    return Napi::Number::New(env, pos);
 }
 
-Napi::Value FrameBuffer::PatternCreateRGB(const Napi::CallbackInfo &info)
+Napi::Number FrameBuffer::PatternCreateRGB(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
-
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
 
     double r, g, b, a;
     size_t pos;
@@ -208,8 +153,8 @@ Napi::Value FrameBuffer::PatternCreateRGB(const Napi::CallbackInfo &info)
         g = (info[1].As<Napi::Number>().DoubleValue());
         b = (info[2].As<Napi::Number>().DoubleValue());
         a = info[3].IsUndefined() ? 1 : (info[3].As<Napi::Number>().DoubleValue());
-        obj->pattern.push_back(cairo_pattern_create_rgba(r, g, b, a));
-        pos = obj->pattern.size() - 1;
+        this->pattern.push_back(cairo_pattern_create_rgba(r, g, b, a));
+        pos = this->pattern.size() - 1;
     }
     else
     {
@@ -219,28 +164,22 @@ Napi::Value FrameBuffer::PatternCreateRGB(const Napi::CallbackInfo &info)
         b = (info[3].As<Napi::Number>().DoubleValue());
         a = info[4].IsUndefined() ? 1 : (info[4].As<Napi::Number>().DoubleValue());
 
-        while (obj->pattern.size() <= pos)
-        {
-            obj->pattern.push_back(nullptr);
-        }
+        while (othisbj->pattern.size() <= pos)
+            this->pattern.push_back(nullptr);
 
-        if (obj->pattern[pos] != nullptr)
-        {
+        if (this->pattern[pos] != nullptr)
             cairo_pattern_destroy(obj->pattern[pos]);
-        }
 
-        obj->pattern[pos] = cairo_pattern_create_rgba(r, g, b, a);
+        this->pattern[pos] = cairo_pattern_create_rgba(r, g, b, a);
     }
 
-    return pos;
+    return Napi::Number::New(env, pos);
 }
 
-Napi::Value FrameBuffer::PatternAddColorStop(const Napi::CallbackInfo &info)
+void FrameBuffer::PatternAddColorStop(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
-
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
 
     size_t patternIndex = (info[0].As<Napi::Number>().DoubleValue());
 
@@ -252,30 +191,24 @@ Napi::Value FrameBuffer::PatternAddColorStop(const Napi::CallbackInfo &info)
     if (!info[5].IsUndefined())
     {
         double alpha = info[5].IsUndefined() ? 1 : info[5].As<Napi::Number>().DoubleValue();
-        cairo_pattern_add_color_stop_rgba(obj->pattern[patternIndex], offset, r, g, b, alpha);
+        cairo_pattern_add_color_stop_rgba(this->pattern[patternIndex], offset, r, g, b, alpha);
     }
     else
     {
-        cairo_pattern_add_color_stop_rgb(obj->pattern[patternIndex], offset, r, g, b);
+        cairo_pattern_add_color_stop_rgb(this->pattern[patternIndex], offset, r, g, b);
     }
-
-    return;
 }
 
-Napi::Value FrameBuffer::PatternDestroy(const Napi::CallbackInfo &info)
+void FrameBuffer::PatternDestroy(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
-
     size_t patternIndex = (info[0].As<Napi::Number>().DoubleValue());
 
-    cairo_pattern_destroy(obj->pattern[patternIndex]);
+    cairo_pattern_destroy(this->pattern[patternIndex]);
 
-    obj->pattern[patternIndex] = nullptr;
-
-    return;
+    this->pattern[patternIndex] = nullptr;
 }
 
 #define cairoSetSourceMacro(cr, obj, env)                                                                      \
@@ -299,28 +232,21 @@ Napi::Value FrameBuffer::PatternDestroy(const Napi::CallbackInfo &info)
         cairo_set_source(cr, obj->pattern[obj->usedPattern]);                                                  \
     }                                                                                                          \
     else                                                                                                       \
-    {                                                                                                          \
-        cairo_set_source_rgb(cr, obj->r, obj->g, obj->b);                                                      \
-    }
+        cairo_set_source_rgb(cr, obj->r, obj->g, obj->b);
 
-Napi::Value FrameBuffer::Fill(const Napi::CallbackInfo &info)
+void FrameBuffer::Fill(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
+    cairo_t *cr = getDrawingContext(this);
 
-    cairo_t *cr = getDrawingContext(obj);
-
-    cairoSetSourceMacro(cr, obj, env);
+    cairoSetSourceMacro(cr, this, env);
     cairo_paint(cr);
-
     cairo_destroy(cr);
-
-    return;
 }
 
-Napi::Value FrameBuffer::Line(const Napi::CallbackInfo &info)
+void FrameBuffer::Line(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
@@ -329,27 +255,20 @@ Napi::Value FrameBuffer::Line(const Napi::CallbackInfo &info)
     double y0 = (info[1].As<Napi::Number>().DoubleValue());
     double x1 = (info[2].As<Napi::Number>().DoubleValue());
     double y1 = (info[3].As<Napi::Number>().DoubleValue());
-
     double w = info[4].IsUndefined() ? 1 : info[4].As<Napi::Number>().DoubleValue();
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
+    cairo_t *cr = getDrawingContext(this);
 
-    cairo_t *cr = getDrawingContext(obj);
-
-    cairoSetSourceMacro(cr, obj, env);
+    cairoSetSourceMacro(cr, this, env);
 
     cairo_move_to(cr, x0, y0);
     cairo_line_to(cr, x1, y1);
-
     cairo_set_line_width(cr, w);
     cairo_stroke(cr);
-
     cairo_destroy(cr);
-
-    return;
 }
 
-Napi::Value FrameBuffer::Rect(const Napi::CallbackInfo &info)
+void FrameBuffer::Rect(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
@@ -359,11 +278,9 @@ Napi::Value FrameBuffer::Rect(const Napi::CallbackInfo &info)
     double w = (info[2].As<Napi::Number>().DoubleValue());
     double h = (info[3].As<Napi::Number>().DoubleValue());
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
+    cairo_t *cr = getDrawingContext(this);
 
-    cairo_t *cr = getDrawingContext(obj);
-
-    cairoSetSourceMacro(cr, obj, env);
+    cairoSetSourceMacro(cr, this, env);
 
     cairo_rectangle(cr, x, y, w, h);
 
@@ -374,20 +291,14 @@ Napi::Value FrameBuffer::Rect(const Napi::CallbackInfo &info)
         cairo_stroke(cr);
     }
     else if (!info[4].IsUndefined() && info[4].As<Napi::Boolean>().Value() == true)
-    {
         cairo_fill(cr);
-    }
     else
-    {
         cairo_fill(cr);
-    }
 
     cairo_destroy(cr);
-
-    return;
 }
 
-Napi::Value FrameBuffer::Circle(const Napi::CallbackInfo &info)
+void FrameBuffer::Circle(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
@@ -396,11 +307,9 @@ Napi::Value FrameBuffer::Circle(const Napi::CallbackInfo &info)
     double y = (info[1].As<Napi::Number>().DoubleValue());
     double radius = (info[2].As<Napi::Number>().DoubleValue());
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
+    cairo_t *cr = getDrawingContext(this);
 
-    cairo_t *cr = getDrawingContext(obj);
-
-    cairoSetSourceMacro(cr, obj, env);
+    cairoSetSourceMacro(cr, this, env);
 
     cairo_arc(cr, x, y, radius, 0, 2 * 3.141592654);
 
@@ -411,37 +320,27 @@ Napi::Value FrameBuffer::Circle(const Napi::CallbackInfo &info)
         cairo_stroke(cr);
     }
     else if (!info[3].IsUndefined() && info[3].As<Napi::Boolean>().Value() == true)
-    {
         cairo_fill(cr);
-    }
     else
-    {
         cairo_fill(cr);
-    }
 
     cairo_destroy(cr);
-
-    return;
 }
 
-Napi::Value FrameBuffer::Font(const Napi::CallbackInfo &info)
+void FrameBuffer::Font(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
-
-    std::string fontName = info[0].ToString(.As<Napi::String>());
+    std::string fontName = info[0].As<Napi::String>();
     std::string _fontName = std::string(*fontName);
 
-    obj->fontName = _fontName.c_str();
-    obj->fontSize = info[1].IsUndefined() ? 12 : info[1].As<Napi::Number>().DoubleValue();
-    obj->fontBold = info[2].IsUndefined() ? false : info[2].As<Napi::Boolean>().Value();
-
-    return;
+    this->fontName = _fontName.c_str();
+    this->fontSize = info[1].IsUndefined() ? 12 : info[1].As<Napi::Number>().DoubleValue();
+    this->fontBold = info[2].IsUndefined() ? false : info[2].As<Napi::Boolean>().Value();
 }
 
-Napi::Value FrameBuffer::Text(const Napi::CallbackInfo &info)
+void FrameBuffer::Text(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
@@ -449,36 +348,28 @@ Napi::Value FrameBuffer::Text(const Napi::CallbackInfo &info)
     double x = (info[0].As<Napi::Number>().DoubleValue());
     double y = (info[1].As<Napi::Number>().DoubleValue());
 
-    std::string text = info[2].ToString(.As<Napi::String>());
+    std::string text = info[2].As<Napi::String>();
     std::string _text = std::string(*text);
 
     bool textCentered = info[3].IsUndefined() ? false : info[3].As<Napi::Boolean>().Value();
     double textRotation = info[4].IsUndefined() ? 0 : info[4].As<Napi::Number>().DoubleValue();
     bool textRight = info[5].IsUndefined() ? false : info[5].As<Napi::Boolean>().Value();
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
+    cairo_t *cr = getDrawingContext(othisbj);
 
-    cairo_t *cr = getDrawingContext(obj);
+    cairoSetSourceMacro(cr, this);
 
-    cairoSetSourceMacro(cr, obj, env);
-
-    if (obj->fontBold)
-    {
-        cairo_select_font_face(cr, obj->fontName, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    }
+    if (this->fontBold)
+        cairo_select_font_face(cr, this->fontName, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     else
-    {
-        cairo_select_font_face(cr, obj->fontName, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-    }
+        cairo_select_font_face(cr, this->fontName, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 
-    cairo_set_font_size(cr, obj->fontSize);
+    cairo_set_font_size(cr, this->fontSize);
 
     cairo_translate(cr, x, y);
 
     if (textRotation != 0)
-    {
         cairo_rotate(cr, textRotation / (180.0 / 3.141592654));
-    }
 
     if (textCentered)
     {
@@ -498,24 +389,20 @@ Napi::Value FrameBuffer::Text(const Napi::CallbackInfo &info)
     cairo_show_text(cr, _text.c_str());
 
     cairo_destroy(cr);
-
-    return;
 }
 
-Napi::Value FrameBuffer::Image(const Napi::CallbackInfo &info)
+void FrameBuffer::Image(const Napi::CallbackInfo &info)
 {
-    Napi::Env env = info.Env();
+    Napi::env env = info.Env();
     Napi::HandleScope scope(env);
 
     double x = (info[0].As<Napi::Number>().DoubleValue());
     double y = (info[1].As<Napi::Number>().DoubleValue());
 
-    std::string path = info[2].ToString(.As<Napi::String>());
+    std::string path = info[2].As<Napi::String>();
     std::string _path = std::string(*path);
 
-    FrameBuffer *obj = info.Holder().Unwrap<FrameBuffer>();
-
-    cairo_t *cr = getDrawingContext(obj);
+    cairo_t *cr = getDrawingContext(this);
 
     cairo_surface_t *image = cairo_image_surface_create_from_png(_path.c_str());
     cairo_set_source_surface(cr, image, x, y);
@@ -524,45 +411,36 @@ Napi::Value FrameBuffer::Image(const Napi::CallbackInfo &info)
     cairo_status_t status = cairo_status(cr);
 
     if (status != CAIRO_STATUS_SUCCESS)
-    {
         Napi::Error::New(env, "Error reading image").ThrowAsJavaScriptException();
-    }
 
     cairo_surface_destroy(image);
     cairo_destroy(cr);
-
-    return env.Null();
 }
 
 cairo_t *FrameBuffer::getDrawingContext(FrameBuffer *obj)
 {
     if (obj->drawToBuffer)
-    {
         return cairo_create(obj->bufferSurface);
-    }
     else
-    {
         return cairo_create(obj->screenSurface);
-    }
 }
 
 FrameBuffer::FrameBuffer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<FrameBuffer>(info)
 {
     Napi::Env env = info.Env();
-    Napi::HandleScope scope(env);
-    const char *path = info[0].As<Napi::String>().Utf8Value().c_str();
+    char *path = info[0].As<Napi::String>().c_str();
 
     fbfd = open(path, O_RDWR);
     if (fbfd == -1)
     {
         Napi::Error::New(env, "Error opening framebuffer device").ThrowAsJavaScriptException();
-        return; // env.Null();
+        return env.Null();
     }
 
     if (ioctl(fbfd, FBIOGET_VSCREENINFO, &vinfo))
     {
         Napi::Error::New(env, "Error retrieving data from framebuffer").ThrowAsJavaScriptException();
-        return; // env.Null();
+        return env.Null();
     }
 
     memcpy(&orig_vinfo, &vinfo, sizeof(struct fb_var_screeninfo));
@@ -571,13 +449,13 @@ FrameBuffer::FrameBuffer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Fram
     if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &vinfo))
     {
         Napi::Error::New(env, "Error sending data to framebuffer").ThrowAsJavaScriptException();
-        return; // env.Null();
+        return env.Null();
     }
 
     if (ioctl(fbfd, FBIOGET_FSCREENINFO, &finfo))
     {
         Napi::Error::New(env, "Error retrieving data from framebuffer").ThrowAsJavaScriptException();
-        return; // env.Null();
+        return env.Null();
     }
 
     screenSize = finfo.smem_len;
@@ -593,7 +471,7 @@ FrameBuffer::FrameBuffer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Fram
     if ((int)fbp == -1)
     {
         Napi::Error::New(env, "Error during memory mapping").ThrowAsJavaScriptException();
-        return; // env.Null();
+        return env.Null();
     }
 
     bufferSurface = cairo_image_surface_create_for_data((unsigned char *)bbp, CAIRO_FORMAT_RGB16_565, vinfo.xres, vinfo.yres, cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, vinfo.xres));
@@ -601,51 +479,41 @@ FrameBuffer::FrameBuffer(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Fram
     if (cairo_surface_status(bufferSurface) != CAIRO_STATUS_SUCCESS)
     {
         Napi::Error::New(env, "Error creating buffer surface").ThrowAsJavaScriptException();
-        return; // env.Null();
+        return env.Null();
     }
 
     screenSurface = cairo_image_surface_create_for_data((unsigned char *)fbp, CAIRO_FORMAT_RGB16_565, vinfo.xres, vinfo.yres, cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, vinfo.xres));
 
     if (cairo_surface_status(bufferSurface) != CAIRO_STATUS_SUCCESS)
-    {
         Napi::Error::New(env, "Error creating screeh surface").ThrowAsJavaScriptException();
-    }
+
+    drawToBuffer = info[1].IsUndefined() ? false : info[1].As<Napi::Boolean>().Value();
 }
 
 FrameBuffer::~FrameBuffer()
 {
     size_t patternSize = pattern.size();
     for (size_t i = 0; i < patternSize; i++)
-    {
         if (pattern[i] != nullptr)
-        {
             cairo_pattern_destroy(pattern[i]);
-        }
-    }
 
     if ((int)fbp != -1)
     {
         free(bbp);
         munmap(fbp, screenSize);
 
-        // if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &orig_vinfo)) {
-        // Napi::Error::New(env, "Error restoring framebuffer state").ThrowAsJavaScriptException();
-
+        // if (ioctl(fbfd, FBIOPUT_VSCREENINFO, &orig_vinfo))
+        // {
+        //     Napi::Error::New(env, "Error restoring framebuffer state").ThrowAsJavaScriptException();
         // }
     }
 
     if (fbfd != -1)
-    {
         close(fbfd);
-    }
 
     if (cairo_surface_status(bufferSurface) == CAIRO_STATUS_SUCCESS)
-    {
         cairo_surface_destroy(bufferSurface);
-    }
 
     if (cairo_surface_status(screenSurface) == CAIRO_STATUS_SUCCESS)
-    {
         cairo_surface_destroy(screenSurface);
-    }
 }

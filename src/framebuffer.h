@@ -20,32 +20,29 @@ using namespace Napi;
 class FrameBuffer : public Napi::ObjectWrap<FrameBuffer>
 {
 public:
-    static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    static Napi::Object NewInstance(const Napi::CallbackInfo &info);
-    static Napi::Value New(const Napi::CallbackInfo &info);
-    static Napi::Value Size(const char *whatisthis, const Napi::CallbackInfo &info);
-    static Napi::Value Data(const Napi::CallbackInfo &info);
-    static Napi::Value Clear(const Napi::CallbackInfo &info);
-    static Napi::Value Blit(const Napi::CallbackInfo &info);
-    static Napi::Value Color(const Napi::CallbackInfo &info);
-    static Napi::Value Fill(const Napi::CallbackInfo &info);
-    static Napi::Value Line(const Napi::CallbackInfo &info);
-    static Napi::Value Rect(const Napi::CallbackInfo &info);
-    static Napi::Value Circle(const Napi::CallbackInfo &info);
-    static Napi::Value Font(const Napi::CallbackInfo &info);
-    static Napi::Value Text(const Napi::CallbackInfo &info);
-    static Napi::Value Image(const Napi::CallbackInfo &info);
-    static Napi::Value PatternCreateLinear(const Napi::CallbackInfo &info);
-    static Napi::Value PatternCreateRGB(const Napi::CallbackInfo &info);
-    static Napi::Value PatternAddColorStop(const Napi::CallbackInfo &info);
-    static Napi::Value PatternDestroy(const Napi::CallbackInfo &info);
-    static cairo_t *getDrawingContext(FrameBuffer *obj);
+    FrameBuffer(const char *path);
     ~FrameBuffer();
+    static void Init();
+    static void New(const Napi::CallbackInfo &info);
+    static Napi::Object Size(const Napi::CallbackInfo &info);
+    static Napi::Object Data(const Napi::CallbackInfo &info);
+    static void Clear(const Napi::CallbackInfo &info);
+    static void Blit(const Napi::CallbackInfo &info);
+    static void Color(const Napi::CallbackInfo &info);
+    static void Fill(const Napi::CallbackInfo &info);
+    static void Line(const Napi::CallbackInfo &info);
+    static void Rect(const Napi::CallbackInfo &info);
+    static void Circle(const Napi::CallbackInfo &info);
+    static void Font(const Napi::CallbackInfo &info);
+    static void Text(const Napi::CallbackInfo &info);
+    static void Image(const Napi::CallbackInfo &info);
+    static Napi::Number PatternCreateLinear(const Napi::CallbackInfo &info);
+    static Napi::Number PatternCreateRGB(const Napi::CallbackInfo &info);
+    static void PatternAddColorStop(const Napi::CallbackInfo &info);
+    static void PatternDestroy(const Napi::CallbackInfo &info);
+    static cairo_t *getDrawingContext(FrameBuffer *obj);
 
 private:
-    // FrameBuffer(const char *path);
-    FrameBuffer(const Napi::CallbackInfo &info);
-
     static Napi::FunctionReference constructor;
     int fbfd;
     struct fb_var_screeninfo orig_vinfo;
