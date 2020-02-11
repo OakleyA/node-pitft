@@ -22,7 +22,7 @@ class FrameBuffer : public Napi::ObjectWrap<FrameBuffer>
 public:
     FrameBuffer(const char *path);
     ~FrameBuffer();
-    static void Init();
+    static Napi::Object Init(Napi::Env env, Napi::Object exports);
     static void New(const Napi::CallbackInfo &info);
     static Napi::Object Size(const Napi::CallbackInfo &info);
     static Napi::Object Data(const Napi::CallbackInfo &info);

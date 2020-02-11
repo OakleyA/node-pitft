@@ -4,7 +4,7 @@ using namespace Napi;
 
 Napi::FunctionReference FrameBuffer::constructor;
 
-Napi::Object FrameBuffer::Init(Napi::env env, Napi::Object exports)
+Napi::Object FrameBuffer::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::HandleScope scope(env);
 
@@ -357,7 +357,7 @@ void FrameBuffer::Text(const Napi::CallbackInfo &info)
 
     cairo_t *cr = getDrawingContext(othisbj);
 
-    cairoSetSourceMacro(cr, this);
+    cairoSetSourceMacro(cr, this, env);
 
     if (this->fontBold)
         cairo_select_font_face(cr, this->fontName, CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
