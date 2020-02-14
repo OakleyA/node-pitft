@@ -17,7 +17,7 @@
             "<!@(node -p \"require('node-addon-api').include\")",
             "<!@(pkg-config cairo --cflags-only-I | sed s/-I//g)"
           ],
-          "sources": [ "src/pitft.cc", "src/framebuffer.cc" ],
+          "sources": [ "src/pitft.cc", "src/framebuffer.cc", "src/framebufferWrapper.cc" ],
           "libraries": [
             "<!@(pkg-config cairo --libs)"
           ]

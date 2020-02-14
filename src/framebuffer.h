@@ -17,41 +17,38 @@
 
 using namespace Napi;
 
-class FrameBuffer : public Napi::ObjectWrap<FrameBuffer>
+class FrameBuffer
 {
 public:
-    FrameBuffer(const char *path);
+    FrameBuffer(const char *path, bool drawToBuffer);
     ~FrameBuffer();
-    static Napi::Object Init(Napi::Env env, Napi::Object exports);
-    static void New(const Napi::CallbackInfo &info);
-    static Napi::Object Size(const Napi::CallbackInfo &info);
-    static Napi::Object Data(const Napi::CallbackInfo &info);
-    static void Clear(const Napi::CallbackInfo &info);
-    static void Blit(const Napi::CallbackInfo &info);
-    static void Color(const Napi::CallbackInfo &info);
-    static void Fill(const Napi::CallbackInfo &info);
-    static void Line(const Napi::CallbackInfo &info);
-    static void Rect(const Napi::CallbackInfo &info);
-    static void Circle(const Napi::CallbackInfo &info);
-    static void Font(const Napi::CallbackInfo &info);
-    static void Text(const Napi::CallbackInfo &info);
-    static void Image(const Napi::CallbackInfo &info);
-    static Napi::Number PatternCreateLinear(const Napi::CallbackInfo &info);
-    static Napi::Number PatternCreateRGB(const Napi::CallbackInfo &info);
-    static void PatternAddColorStop(const Napi::CallbackInfo &info);
-    static void PatternDestroy(const Napi::CallbackInfo &info);
-    static cairo_t *getDrawingContext(FrameBuffer *obj);
+    void Clear();
+    void Blit();
+    void Color(double r, double g, double b);
+    void Fill();
+    void Line(double arg0, double arg1, double arg2, double arg3, double arg4);
+    void Rect(double arg0, double arg1, double arg2, double arg3, bool arg4, double arg5);
+    void Circle(double arg0, double arg1, double arg2, bool arg3, double arg4);
+    void Font(std::string arg0, double arg1, bool arg2);
+    void Text(double arg0, double arg1, std::string arg2, bool arg3, double arg4, bool arg5);
+    void Image(double arg0, double arg1, std::string arg2);
+    size_t PatternCreateLinear(double arg0, double arg1, double arg2, double arg3, double arg4);
+    size_t PatternCreateRGB(double arg0, double arg1, double arg2, double arg3, double arg4);
+    void PatternAddColorStop(double arg0, double arg1, double arg2, double arg3, double arg4, double arg5);
+    void PatternDestroy(double arg0);
+
+	cairo_t *getDrawingContext(FrameBuffer *obj);
+
+    long int screenSize;
+    char *fbp;
+    struct fb_var_screeninfo vinfo;
 
 private:
-    static Napi::FunctionReference constructor;
     int fbfd;
     struct fb_var_screeninfo orig_vinfo;
-    struct fb_var_screeninfo vinfo;
     struct fb_fix_screeninfo finfo;
-    long int screenSize;
 
     char *bbp;
-    char *fbp;
 
     cairo_surface_t *bufferSurface;
     cairo_surface_t *screenSurface;
