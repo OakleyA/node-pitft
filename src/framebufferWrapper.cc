@@ -1,7 +1,5 @@
 #include "framebufferWrapper.h"
 
-using namespace Napi;
-
 Napi::FunctionReference FrameBufferWrapper::constructor;
 
 Napi::Object FrameBufferWrapper::Init(Napi::Env env, Napi::Object exports)
@@ -58,7 +56,7 @@ FrameBufferWrapper::FrameBufferWrapper(const Napi::CallbackInfo &info) : Napi::O
     this->frameBufferClass = new FrameBuffer(path, drawToBuffer);
 }
 
-Napi::Object FrameBufferWrapper::Size(const Napi::CallbackInfo &info)
+Napi::Value FrameBufferWrapper::Size(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
@@ -70,7 +68,7 @@ Napi::Object FrameBufferWrapper::Size(const Napi::CallbackInfo &info)
     return sizeObject;
 }
 
-Napi::Object FrameBufferWrapper::Data(const Napi::CallbackInfo &info)
+Napi::Value FrameBufferWrapper::Data(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
@@ -111,7 +109,7 @@ void FrameBufferWrapper::Color(const Napi::CallbackInfo &info)
         Napi::TypeError::New(env, "Invalid arguments").ThrowAsJavaScriptException();
 }
 
-Napi::Number FrameBufferWrapper::PatternCreateLinear(const Napi::CallbackInfo &info)
+Napi::Value FrameBufferWrapper::PatternCreateLinear(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
@@ -130,7 +128,7 @@ Napi::Number FrameBufferWrapper::PatternCreateLinear(const Napi::CallbackInfo &i
     return Napi::Number::New(env, pos);
 }
 
-Napi::Number FrameBufferWrapper::PatternCreateRGB(const Napi::CallbackInfo &info)
+Napi::Value FrameBufferWrapper::PatternCreateRGB(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
