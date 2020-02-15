@@ -1,7 +1,7 @@
 {
   "targets": [
     {
-      "target_name": "pitft-napi",
+      "target_name": "pitftnapi",
       "cflags!": [ "-fno-exceptions" ],
       "cflags_cc!": [ "-fno-exceptions" ],
       "xcode_settings": { "GCC_ENABLE_CPP_EXCEPTIONS": "YES",
@@ -17,7 +17,7 @@
             "<!@(node -p \"require('node-addon-api').include\")",
             "<!@(pkg-config cairo --cflags-only-I | sed s/-I//g)"
           ],
-          "sources": ["<!@(find src -type f | grep .cc)"],,
+          "sources": ["<!@(find src -type f | grep .cc)"],
           "libraries": ["<!@(pkg-config cairo --libs)"],
 		  "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"]
         }]

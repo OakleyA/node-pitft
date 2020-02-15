@@ -1,8 +1,5 @@
 #include <napi.h>
-#include <uv.h>
 #include "framebufferWrapper.h"
-
-using namespace Napi;
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports)
 {
@@ -11,4 +8,4 @@ Napi::Object InitAll(Napi::Env env, Napi::Object exports)
   return FrameBufferWrapper::Init(env, exports);
 }
 
-NODE_API_MODULE(pitft, InitAll)
+NODE_API_MODULE(NODE_GYP_MODULE_NAME, InitAll);

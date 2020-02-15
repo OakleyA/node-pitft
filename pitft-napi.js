@@ -1,3 +1,3 @@
-var bindings = require('bindings')('pitft');
+var bindings = require('bindings')('pitftnapi');
 
 module.exports = bindings;
