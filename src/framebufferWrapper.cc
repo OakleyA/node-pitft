@@ -6,7 +6,7 @@ Napi::Object FrameBufferWrapper::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::HandleScope scope(env);
 
-    Napi::Function func = DefineClass(env, "FrameBufferWrapper",
+    Napi::Function func = DefineClass(env, "FrameBuffer",
 	  {
 		  InstanceMethod("size", &FrameBufferWrapper::Size),
 		  InstanceMethod("data", &FrameBufferWrapper::Data),
@@ -29,7 +29,7 @@ Napi::Object FrameBufferWrapper::Init(Napi::Env env, Napi::Object exports)
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 
-    exports.Set("FrameBufferWrapper", func);
+    exports.Set("FrameBuffer", func);
 
     return exports;
 }
