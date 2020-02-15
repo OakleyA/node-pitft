@@ -6,15 +6,12 @@
   "typings": "pitft-napi.d.ts",
   "author": "Werner Vesteraas <wvesteraas@gmail.com>",
   "contributors": [
-	{
-		"name": "Anthony Oakley",
-		"email": "agoakley@gmail.com"
-	}
+    {
+      "name": "Anthony Oakley",
+      "email": "agoakley@gmail.com"
+    }
   ],
-  "license": {
-    "type": "MIT",
-    "url": "http://opensource.org/licenses/MIT"
-  },
+  "license": "MIT",
   "keywords": [
     "raspberry pi",
     "touchscreen",
@@ -26,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-	"url": "https://github.com/oakleya/pitft-napi.git"
+    "url": "https://github.com/oakleya/pitft-napi.git"
   },
   "scripts": {
     "build": "node-gyp rebuild"
