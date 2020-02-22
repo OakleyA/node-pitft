@@ -8,7 +8,6 @@ class FrameBufferWrapper : public Napi::ObjectWrap<FrameBufferWrapper> {
   public:
     static Napi::Object Init(Napi::Env env, Napi::Object exports);
     FrameBufferWrapper(const Napi::CallbackInfo &info);
-    ~FrameBufferWrapper();
 
   private:
     static Napi::FunctionReference constructor;
@@ -31,7 +30,7 @@ class FrameBufferWrapper : public Napi::ObjectWrap<FrameBufferWrapper> {
     Napi::Value PatternCreateLinear(const Napi::CallbackInfo &info);
     Napi::Value PatternCreateRGB(const Napi::CallbackInfo &info);
 
-    FrameBuffer *frameBufferClass;
+    FrameBuffer *frameBufferClass_;
 };
 
 #endif

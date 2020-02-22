@@ -19,9 +19,10 @@
           ],
           "sources": ["<!@(find src -type f | grep .cc)"],
           "libraries": ["<!@(pkg-config cairo --libs)"],
-		  "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"]
+		      "dependencies": ["<!(node -p \"require('node-addon-api').gyp\")"],
+          "defines": ["NAPI_DISABLE_CPP_EXCEPTIONS"]
         }]
-        ]
+      ]
     }
   ]
 }
