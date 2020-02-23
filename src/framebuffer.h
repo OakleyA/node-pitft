@@ -17,7 +17,7 @@ using namespace Napi;
 
 class FrameBuffer {
   public:
-    FrameBuffer(const char *path, bool drawToBuffer);
+    FrameBuffer(std::string cwd, const char *path, bool drawToBuffer);
     ~FrameBuffer();
     void Clear();
     void Blit();
@@ -61,6 +61,8 @@ class FrameBuffer {
     bool fontBold;
 
     bool drawToBuffer;
+
+    std::string cwd;
 };
 
 #endif

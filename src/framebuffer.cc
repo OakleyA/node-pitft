@@ -1,6 +1,7 @@
 #include "framebuffer.h"
 
-FrameBuffer::FrameBuffer(const char *path, bool drawToBuff) {
+FrameBuffer::FrameBuffer(std::string wd, const char *path, bool drawToBuff) {
+    cwd = wd;
     drawToBuffer = drawToBuff;
 
     fbfd = open(path, O_RDWR);
@@ -231,8 +232,7 @@ void FrameBuffer::Font(std::string fontName, double fontSize = 12, bool fontBold
     this->fontBold = fontBold;
 }
 
-void FrameBuffer::Text(double x, double y, std::string text, bool textCentered = false, double textRotation = 0,
-                       bool textRight = false) {
+void FrameBuffer::Text(double x, double y, std::string text, bool textCentered, double textRotation, bool textRight) {
     cairo_t *cr = getDrawingContext(this);
     cairoSetSourceMacro(cr, this);
 
@@ -262,6 +262,7 @@ void FrameBuffer::Text(double x, double y, std::string text, bool textCentered =
 }
 
 void FrameBuffer::Image(double x, double y, std::string path) {
+    path = cwd + "/" + path;
     cairo_t *cr = getDrawingContext(this);
     cairo_surface_t *image = cairo_image_surface_create_from_png(path.c_str());
 
@@ -271,7 +272,7 @@ void FrameBuffer::Image(double x, double y, std::string path) {
     cairo_status_t status = cairo_status(cr);
 
     if (status != CAIRO_STATUS_SUCCESS)
-        throw std::runtime_error("Error reading image");
+        throw std::runtime_error("Error reading image: " + path + " : " + cairo_status_to_string(status));
 
     cairo_surface_destroy(image);
     cairo_destroy(cr);

@@ -1,4 +1,4 @@
-var pitft = require("../pitft");
+var pitft = require("../pitft-napi");
 
 var fb = pitft("/dev/fb1"); // Returns a framebuffer in direct mode.  See the clock.js example for double buffering mode
 
@@ -8,7 +8,7 @@ fb.clear();
 var xMax = fb.size().width;
 var yMax = fb.size().height;
 
-for (var n=0; n<250; n++) {
+for (var n = 0; n < 250; n++) {
     var x, y, radius, r, g, b;
 
     x = parseInt(Math.random() * xMax, 10);
@@ -26,7 +26,7 @@ for (var n=0; n<250; n++) {
 
 fb.clear();
 
-for (var n=0; n<250; n++) {
+for (var n = 0; n < 250; n++) {
     var x, y, radius, r, g, b;
 
     x = parseInt(Math.random() * xMax, 10);

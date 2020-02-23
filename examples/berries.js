@@ -1,4 +1,4 @@
-var pitft = require("../pitft");
+var pitft = require("../pitft-napi");
 
 var fb = pitft("/dev/fb1"); // Returns a framebuffer in direct mode.  See the clock.js example for double buffering mode
 
@@ -10,7 +10,7 @@ var yMax = fb.size().height;
 
 fb.image(0, 0, "raspberry-pi.png"); // Draw the image from the file "raspberry-pi.png" at position 0, 0
 
-for (var n=0; n<1000; n++) {
+for (var n = 0; n < 1000; n++) {
     var x = Math.random() * (xMax + 32) - 16;
     var y = Math.random() * (yMax + 32) - 16;
 

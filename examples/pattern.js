@@ -1,4 +1,4 @@
-var pitft = require("../pitft");
+var pitft = require("../pitft-napi");
 
 var fb = pitft("/dev/fb1"); // Returns a framebuffer in direct mode.  See the clock.js example for double buffering mode
 
@@ -33,24 +33,24 @@ fb.color(pattern1);
 fb.rect(0, 0, xMax, 20);
 
 // Draw some circles using pattern1 and pattern2
-fb.circle(xMax/2, yMax/2, 60, false, 10);
+fb.circle(xMax / 2, yMax / 2, 60, false, 10);
 
 fb.color(pattern2);
-fb.circle(xMax/2, yMax/2, 40, false, 10);
+fb.circle(xMax / 2, yMax / 2, 40, false, 10);
 
 fb.color(pattern1);
-fb.circle(xMax/2, yMax/2, 20);
+fb.circle(xMax / 2, yMax / 2, 20);
 
 // Write some text
 fb.font("fantasy", 24);
-fb.text(xMax/2, 30, "Some text", true);
+fb.text(xMax / 2, 30, "Some text", true);
 
 // Draw a green fade-in bar at the bottom, reuse and override pattern1
-pattern1 = fb.patternCreateLinear(pattern1 ,0, 0, xMax, 0); // patternID, xStart, yStart, xEnd, yEnd
+pattern1 = fb.patternCreateLinear(pattern1, 0, 0, xMax, 0); // patternID, xStart, yStart, xEnd, yEnd
 fb.patternAddColorStop(pattern1, 0, 0, 1, 0, 0); // patternID, offset, r, g, b, a
 fb.patternAddColorStop(pattern1, 1, 0, 1, 0, 1);
 fb.color(pattern1);
-fb.rect(0, yMax-20, xMax, 40);
+fb.rect(0, yMax - 20, xMax, 40);
 
 // Create a RGBA pattern and draw a line across the screen
 var pattern4 = fb.patternCreateRGB(1, 0, 1, 0.5); // r, g, b, a
