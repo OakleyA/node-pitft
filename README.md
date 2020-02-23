@@ -25,7 +25,7 @@ You will also need to install the [Cairo](http://cairographics.org) library.  Th
 $ sudo apt-get install libcairo2-dev
 ```
 
-Finally, you can install the pitft module itself:
+Finally, you can install the pitft-napi module itself:
 
 ```bash
 $ npm install pitft-napi
