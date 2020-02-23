@@ -1,6 +1,6 @@
 pitft-napi
 =====
-### NAPI conversion of [node-pitft](https://github.com/vesteraas/node-pitft) by Werner Vesterås
+### NAPI conversion of [node-pitft](https://github.com/vesteraas/node-pitft)
 
 ### A [NodeJS](http://nodejs.org) module for the Adafruit PiTFT family of displays for the [Raspberry Pi](http://www.raspberrypi.org) computer.
 
