@@ -1,4 +1,4 @@
-var pitft = require("../pitft-napi");
+var pitft = require("../pitft-napi", true);
 
 var fb = pitft("/dev/fb1"); // Returns a framebuffer in direct mode.  See the clock.js example for double buffering mode
 
@@ -27,3 +27,4 @@ for (var a = 180; a <= 270; a += 15) {
 
 fb.font("fantasy", 16, true); // Use the "fantasy" font with size 16 and bold
 fb.text(xMax - 20, 20, "Right bold text", false, 0, true); // Draw the text non-centered, non-rotated, right
+fb.blit();
