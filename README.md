@@ -1,10 +1,14 @@
-pitft
+pitft-napi
 =====
+### N-API conversion of [node-pitft](https://github.com/vesteraas/node-pitft)
 
 ### A [NodeJS](http://nodejs.org) module for the Adafruit PiTFT family of displays for the [Raspberry Pi](http://www.raspberrypi.org) computer.
 
-With this module, you can draw lines, circles, rectangles, text and images to your Adafruit PiTFT from your NodeJS application.  Includes double buffering support for flicker-free drawing.  This module is only tested on the [2.8" PiTFT](http://www.adafruit.com/product/1601) and the [2.2" PiTFT](https://www.adafruit.com/product/2315) but should work on other displays from Adafruit.
+With this module, you can draw lines, circles, rectangles, text and images to your Adafruit PiTFT from your NodeJS application.  Includes double buffering support for flicker-free drawing.  This module is tested on the [2.8" PiTFT](http://www.adafruit.com/product/1601), [2.2" PiTFT](https://www.adafruit.com/product/2315), 2.8" ILI9341 and 3.2" ILI 9341 but should work on other compatible displays.
 
+## Conversion to NAPI
+  - Anthony Oakley <agoakley@gmail.com>
+ 
 ## Author
   - Werner Vesterås <wvesteraas@gmail.com>
   
@@ -21,15 +25,15 @@ You will also need to install the [Cairo](http://cairographics.org) library.  Th
 $ sudo apt-get install libcairo2-dev
 ```
 
-Finally, you can install the pitft module itself:
+Finally, you can install the pitft-napi module itself:
 
 ```bash
-$ npm install pitft
+$ npm install pitft-napi
 ```
 
 ## Examples
 
-Instead of writing a lot of documentation, I've written a few example programs.  They can be found in the [examples](https://github.com/vesteraas/node-pitft/tree/master/examples) directory, and they cover all the functionality of the module.
+Instead of writing a lot of documentation, I've written a few example programs.  They can be found in the [examples](https://github.com/oakleya/pitft-napi/tree/master/examples) directory, and they cover all the functionality of the module.
 
 ### Screenshots
 #### [berries.js](/examples/berries.js)
