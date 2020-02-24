@@ -72,7 +72,7 @@ void FrameBuffer::Blit() {
     }
 }
 
-void FrameBuffer::Color(double r, double g = -1, double b = -1) {
+void FrameBuffer::Color(double r, double g, double b) {
     if (g == -1) {
         this->usedPattern = (r);
         this->usePattern = true;
@@ -84,7 +84,7 @@ void FrameBuffer::Color(double r, double g = -1, double b = -1) {
     }
 }
 
-size_t FrameBuffer::PatternCreateLinear(double arg0, double arg1, double arg2, double arg3, double arg4 = -1) {
+size_t FrameBuffer::PatternCreateLinear(double arg0, double arg1, double arg2, double arg3, double arg4) {
     double x0, y0, x1, y1;
     size_t pos;
 
@@ -114,7 +114,7 @@ size_t FrameBuffer::PatternCreateLinear(double arg0, double arg1, double arg2, d
     return pos;
 }
 
-size_t FrameBuffer::PatternCreateRGB(double arg0, double arg1, double arg2, double arg3 = 1, double arg4 = 1) {
+size_t FrameBuffer::PatternCreateRGB(double arg0, double arg1, double arg2, double arg3, double arg4) {
     double r, g, b, a;
     size_t pos;
 
@@ -144,8 +144,7 @@ size_t FrameBuffer::PatternCreateRGB(double arg0, double arg1, double arg2, doub
     return pos;
 }
 
-void FrameBuffer::PatternAddColorStop(size_t patternIndex, double offset, double r, double g, double b,
-                                      double alpha = -1) {
+void FrameBuffer::PatternAddColorStop(size_t patternIndex, double offset, double r, double g, double b, double alpha) {
 
     if (alpha != -1)
         cairo_pattern_add_color_stop_rgba(this->pattern[patternIndex], offset, r, g, b, alpha);
@@ -185,7 +184,7 @@ void FrameBuffer::Fill() {
     cairo_destroy(cr);
 }
 
-void FrameBuffer::Line(double x0, double y0, double x1, double y1, double w = 1) {
+void FrameBuffer::Line(double x0, double y0, double x1, double y1, double w) {
     cairo_t *cr = getDrawingContext(this);
 
     cairoSetSourceMacro(cr, this);
@@ -196,14 +195,14 @@ void FrameBuffer::Line(double x0, double y0, double x1, double y1, double w = 1)
     cairo_destroy(cr);
 }
 
-void FrameBuffer::Rect(double x, double y, double w, double h, bool arg4 = true, double arg5 = 1) {
+void FrameBuffer::Rect(double x, double y, double w, double h, bool filled, double lineWidth) {
     cairo_t *cr = getDrawingContext(this);
 
     cairoSetSourceMacro(cr, this);
     cairo_rectangle(cr, x, y, w, h);
 
-    if (arg4 == false) {
-        cairo_set_line_width(cr, arg5);
+    if (filled == false) {
+        cairo_set_line_width(cr, lineWidth);
         cairo_stroke(cr);
     } else
         cairo_fill(cr);
@@ -211,14 +210,14 @@ void FrameBuffer::Rect(double x, double y, double w, double h, bool arg4 = true,
     cairo_destroy(cr);
 }
 
-void FrameBuffer::Circle(double x, double y, double radius, bool arg3 = true, double arg4 = 1) {
+void FrameBuffer::Circle(double x, double y, double radius, bool filled, double lineWidth) {
     cairo_t *cr = getDrawingContext(this);
 
     cairoSetSourceMacro(cr, this);
     cairo_arc(cr, x, y, radius, 0, 2 * 3.141592654);
 
-    if (arg3 == false) {
-        cairo_set_line_width(cr, arg4);
+    if (filled == false) {
+        cairo_set_line_width(cr, lineWidth);
         cairo_stroke(cr);
     } else
         cairo_fill(cr);

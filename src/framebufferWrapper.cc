@@ -25,6 +25,7 @@ Napi::Object FrameBufferWrapper::Init(Napi::Env env, Napi::Object exports) {
          InstanceMethod("patternAddColorStop", &FrameBufferWrapper::PatternAddColorStop),
          InstanceMethod("patternDestroy", &FrameBufferWrapper::PatternDestroy)});
     // clang-format on
+
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 
@@ -37,18 +38,21 @@ FrameBufferWrapper::FrameBufferWrapper(const Napi::CallbackInfo &info) : Napi::O
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
 
+    // the first parameter is hard coded to the JS execution path
     if (info.Length() < 2)
         Napi::TypeError::New(env, "expected 1 or 2 parameters").ThrowAsJavaScriptException();
 
+    // JS execution path
     std::string cwd = info[0].As<Napi::String>().Utf8Value();
+    // framebuffer device path
     const char *path = info[1].As<Napi::String>().Utf8Value().c_str();
     bool drawToBuffer = false;
 
-    if (info.Length() == 2) {
-        if (!info[1].IsBoolean())
+    if (info.Length() == 3) {
+        if (!info[2].IsBoolean())
             Napi::TypeError::New(env, "expected boolean");
         else
-            drawToBuffer = info[1].As<Napi::Boolean>().Value();
+            drawToBuffer = info[2].As<Napi::Boolean>().Value();
     }
 
     this->frameBufferClass_ = new FrameBuffer(cwd, path, drawToBuffer);
@@ -99,7 +103,7 @@ void FrameBufferWrapper::Color(const Napi::CallbackInfo &info) {
                                        info[1].As<Napi::Number>().DoubleValue(),
                                        info[2].As<Napi::Number>().DoubleValue());
     else
-        Napi::TypeError::New(env, "Invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
 }
 
 Napi::Value FrameBufferWrapper::PatternCreateLinear(const Napi::CallbackInfo &info) {
@@ -117,7 +121,7 @@ Napi::Value FrameBufferWrapper::PatternCreateLinear(const Napi::CallbackInfo &in
             info[4].IsUndefined() ? -1 : info[4].As<Napi::Number>().DoubleValue());
     // clang-format on
     else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 
     return Napi::Number::New(env, pos);
 }
@@ -126,6 +130,22 @@ Napi::Value FrameBufferWrapper::PatternCreateRGB(const Napi::CallbackInfo &info)
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     size_t pos = -1;
+    double arg3 = 1;
+    double arg4 = 1;
+
+    if (!info[3].IsUndefined()) {
+        if (info[3].IsNumber())
+            arg3 = info[3].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid argument 3").ThrowAsJavaScriptException();
+    }
+
+    if (!info[4].IsUndefined()) {
+        if (info[4].IsNumber())
+            arg4 = info[4].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid argument 4").ThrowAsJavaScriptException();
+    }
 
     if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsNumber())
         // clang-format off
@@ -133,11 +153,10 @@ Napi::Value FrameBufferWrapper::PatternCreateRGB(const Napi::CallbackInfo &info)
             info[0].As<Napi::Number>().DoubleValue(),
             info[1].As<Napi::Number>().DoubleValue(),
             info[2].As<Napi::Number>().DoubleValue(),
-            info[3].IsUndefined() ? 1 : info[3].As<Napi::Number>().DoubleValue(),
-            info[4].IsUndefined() ? 1 : info[4].As<Napi::Number>().DoubleValue());
+            arg3, arg4);
     // clang-format on
     else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 
     return Napi::Number::New(env, pos);
 }
@@ -145,19 +164,41 @@ Napi::Value FrameBufferWrapper::PatternCreateRGB(const Napi::CallbackInfo &info)
 void FrameBufferWrapper::PatternAddColorStop(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
+    double arg3 = 1;
+    double arg4 = 1;
+    double arg5 = 1;
 
-    if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsNumber() && info[3].IsNumber() && info[4].IsNumber())
+    if (!info[3].IsUndefined()) {
+        if (info[3].IsNumber())
+            arg3 = info[3].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid argument 3").ThrowAsJavaScriptException();
+    }
+
+    if (!info[4].IsUndefined()) {
+        if (info[4].IsNumber())
+            arg4 = info[4].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid argument 4").ThrowAsJavaScriptException();
+    }
+
+    if (!info[5].IsUndefined()) {
+        if (info[5].IsNumber())
+            arg5 = info[5].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid argument 5").ThrowAsJavaScriptException();
+    }
+
+    if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsNumber())
         // clang-format off
         this->frameBufferClass_->PatternAddColorStop(
             info[0].As<Napi::Number>().DoubleValue(),
             info[1].As<Napi::Number>().DoubleValue(),
             info[2].As<Napi::Number>().DoubleValue(),
-            info[3].IsUndefined() ? 1 : info[3].As<Napi::Number>().DoubleValue(),
-            info[4].IsUndefined() ? 1 : info[4].As<Napi::Number>().DoubleValue(),
-            info[5].IsUndefined() ? 1 : info[5].As<Napi::Number>().DoubleValue());
+            arg3, arg4, arg5);
     // clang-format on
     else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }
 
 void FrameBufferWrapper::PatternDestroy(const Napi::CallbackInfo &info) {
@@ -166,6 +207,8 @@ void FrameBufferWrapper::PatternDestroy(const Napi::CallbackInfo &info) {
 
     if (info.Length() == 1 && info[0].IsNumber())
         this->frameBufferClass_->PatternDestroy(info[0].As<Napi::Number>().DoubleValue());
+    else
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }
 
 void FrameBufferWrapper::Fill(const Napi::CallbackInfo &info) {
@@ -178,23 +221,47 @@ void FrameBufferWrapper::Fill(const Napi::CallbackInfo &info) {
 void FrameBufferWrapper::Line(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
+    double width = 1;
 
-    if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsNumber() && info[3].IsNumber() && info[4].IsNumber())
+    if (!info[4].IsUndefined()) {
+        if (info[4].IsNumber())
+            width = info[4].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid width argument").ThrowAsJavaScriptException();
+    }
+
+    if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsNumber() && info[3].IsNumber())
         // clang-format off
         this->frameBufferClass_->Line(
             info[0].As<Napi::Number>().DoubleValue(),
             info[1].As<Napi::Number>().DoubleValue(),
             info[2].As<Napi::Number>().DoubleValue(),
             info[3].As<Napi::Number>().DoubleValue(),
-            info[4].IsUndefined() ? 1 : info[4].As<Napi::Number>().DoubleValue());
+            width);
     // clang-format on
     else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }
 
 void FrameBufferWrapper::Rect(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
+    bool filled = true;
+    double lineWidth = 1;
+
+    if (!info[4].IsUndefined()) {
+        if (info[4].IsBoolean())
+            filled = info[4].As<Napi::Boolean>().Value();
+        else
+            Napi::TypeError::New(env, "invalid filled argument").ThrowAsJavaScriptException();
+    }
+
+    if (!info[5].IsUndefined()) {
+        if (info[5].IsNumber())
+            lineWidth = info[5].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid line width").ThrowAsJavaScriptException();
+    }
 
     if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsNumber() && info[3].IsNumber())
         // clang-format off
@@ -203,65 +270,102 @@ void FrameBufferWrapper::Rect(const Napi::CallbackInfo &info) {
             info[1].As<Napi::Number>().DoubleValue(),
             info[2].As<Napi::Number>().DoubleValue(),
             info[3].As<Napi::Number>().DoubleValue(),
-            info[4].IsUndefined() ? true : info[4].As<Napi::Boolean>().Value(),
-            info[5].IsUndefined() ? 1 : info[5].As<Napi::Number>().DoubleValue());
+            filled, lineWidth);
     // clang-format on
     else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }
 
 void FrameBufferWrapper::Circle(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
+    bool filled = true;
+    double lineWidth = 1;
+
+    if (!info[3].IsUndefined()) {
+        if (info[3].IsBoolean())
+            filled = info[3].As<Napi::Boolean>().Value();
+        else
+            Napi::TypeError::New(env, "invalid filled argument").ThrowAsJavaScriptException();
+    }
+
+    if (!info[4].IsUndefined()) {
+        if (info[4].IsNumber())
+            lineWidth = info[4].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid line width").ThrowAsJavaScriptException();
+    }
 
     if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsNumber())
         this->frameBufferClass_->Circle(info[0].As<Napi::Number>().DoubleValue(),
                                         info[1].As<Napi::Number>().DoubleValue(),
-                                        info[2].As<Napi::Number>().DoubleValue(),
-                                        info[3].IsUndefined() ? true : info[3].As<Napi::Boolean>().Value(),
-                                        info[4].IsUndefined() ? 1 : info[4].As<Napi::Number>().DoubleValue());
+                                        info[2].As<Napi::Number>().DoubleValue(), filled, lineWidth);
     else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }
 
 void FrameBufferWrapper::Font(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
     double fontSize = 12;
+    bool bold = false;
 
-    if (info[0].IsString()) {
-        if (!info[1].IsUndefined() && info[1].IsNumber())
+    if (!info[1].IsUndefined()) {
+        if (info[1].IsNumber())
             fontSize = info[1].As<Napi::Number>().DoubleValue();
-        this->frameBufferClass_->Font(info[0].As<Napi::String>().Utf8Value(), fontSize,
-                                      info[2].IsUndefined() ? false : info[2].As<Napi::Boolean>().Value());
-    } else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        else
+            Napi::TypeError::New(env, "invalid font size").ThrowAsJavaScriptException();
+    }
+
+    if (!info[2].IsUndefined()) {
+        if (info[2].IsBoolean())
+            bold = info[2].As<Napi::Boolean>().Value();
+        else
+            Napi::TypeError::New(env, "invalid bold argument").ThrowAsJavaScriptException();
+    }
+
+    if (info[0].IsString())
+        this->frameBufferClass_->Font(info[0].As<Napi::String>().Utf8Value(), fontSize, bold);
+    else
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }
 
 void FrameBufferWrapper::Text(const Napi::CallbackInfo &info) {
     Napi::Env env = info.Env();
     Napi::HandleScope scope(env);
+    bool centered = false;
+    double rotation = 0;
+    bool alignRight = false;
+
+    if (!info[3].IsUndefined()) {
+        if (info[3].IsBoolean())
+            centered = info[3].As<Napi::Boolean>().Value();
+        else
+            Napi::TypeError::New(env, "invalid centered argument");
+    }
+
+    if (!info[4].IsUndefined()) {
+        if (info[4].IsNumber())
+            rotation = info[4].As<Napi::Number>().DoubleValue();
+        else
+            Napi::TypeError::New(env, "invalid rotation");
+    }
+
+    if (!info[5].IsUndefined()) {
+        if (info[5].IsBoolean())
+            alignRight = info[5].As<Napi::Boolean>().Value();
+        else
+            Napi::TypeError::New(env, "invalid right align argument");
+    }
 
     if (info[0].IsNumber() && info[1].IsNumber() && info[2].IsString()) {
         double x = info[0].As<Napi::Number>().DoubleValue();
         double y = info[1].As<Napi::Number>().DoubleValue();
         std::string text = info[2].As<Napi::String>().Utf8Value();
-        bool centered = false;
-        double rotation = 0;
-        bool alignRight = false;
-
-        if (!info[3].IsUndefined() && info[3].IsBoolean())
-            centered = info[3].As<Napi::Boolean>().Value();
-
-        if (!info[4].IsUndefined() && info[4].IsNumber())
-            rotation = info[4].As<Napi::Number>().DoubleValue();
-
-        if (!info[5].IsUndefined() && info[5].IsBoolean())
-            alignRight = info[5].As<Napi::Boolean>().Value();
 
         this->frameBufferClass_->Text(x, y, text, centered, rotation, alignRight);
     } else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }
 
 void FrameBufferWrapper::Image(const Napi::CallbackInfo &info) {
@@ -273,5 +377,5 @@ void FrameBufferWrapper::Image(const Napi::CallbackInfo &info) {
                                        info[1].As<Napi::Number>().DoubleValue(),
                                        info[2].As<Napi::String>().Utf8Value());
     else
-        Napi::TypeError::New(env, "invalid arguments").ThrowAsJavaScriptException();
+        Napi::TypeError::New(env, "invalid argument").ThrowAsJavaScriptException();
 }

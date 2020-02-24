@@ -24,8 +24,8 @@ class FrameBuffer {
     void Color(double r, double g, double b);
     void Fill();
     void Line(double x0, double y0, double x1, double y1, double w);
-    void Rect(double x, double y, double w, double h, bool arg4, double arg5);
-    void Circle(double x, double y, double radius, bool arg3, double arg4);
+    void Rect(double x, double y, double w, double h, bool filled, double lineWidth);
+    void Circle(double x, double y, double radius, bool filled, double lineWidth);
     void Font(std::string fontName, double fontSize, bool fontBold);
     void Text(double x, double y, std::string text, bool textCentered, double textRotation, bool textRight);
     void Image(double x, double y, std::string path);
