@@ -30,7 +30,6 @@ FrameBuffer::FrameBuffer(std::string wd, const char *path, bool drawToBuff) {
 
     screenSize = finfo.smem_len;
     fbp = (char *)mmap(0, screenSize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
-
     bbp = (char *)malloc(screenSize);
 
     if ((int)fbp == -1) {
@@ -52,7 +51,9 @@ FrameBuffer::FrameBuffer(std::string wd, const char *path, bool drawToBuff) {
                                             cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, vinfo.xres));
 
     if (cairo_surface_status(bufferSurface) != CAIRO_STATUS_SUCCESS)
-        throw std::runtime_error("Error creating screeh surface");
+        throw std::runtime_error("Error creating screen surface");
+
+    return;
 }
 
 void FrameBuffer::Clear() {
@@ -61,6 +62,8 @@ void FrameBuffer::Clear() {
     cairo_set_source_rgb(cr, 0, 0, 0);
     cairo_paint(cr);
     cairo_destroy(cr);
+
+    return;
 }
 
 void FrameBuffer::Blit() {
@@ -70,6 +73,8 @@ void FrameBuffer::Blit() {
         cairo_paint(cr);
         cairo_destroy(cr);
     }
+
+    return;
 }
 
 void FrameBuffer::Color(double r, double g, double b) {
@@ -82,6 +87,8 @@ void FrameBuffer::Color(double r, double g, double b) {
         this->b = b;
         this->usePattern = false;
     }
+
+    return;
 }
 
 size_t FrameBuffer::PatternCreateLinear(double arg0, double arg1, double arg2, double arg3, double arg4) {
@@ -150,12 +157,16 @@ void FrameBuffer::PatternAddColorStop(size_t patternIndex, double offset, double
         cairo_pattern_add_color_stop_rgba(this->pattern[patternIndex], offset, r, g, b, alpha);
     else
         cairo_pattern_add_color_stop_rgb(this->pattern[patternIndex], offset, r, g, b);
+
+    return;
 }
 
 void FrameBuffer::PatternDestroy(size_t patternIndex) {
     cairo_pattern_destroy(this->pattern[patternIndex]);
 
     this->pattern[patternIndex] = nullptr;
+
+    return;
 }
 
 #define cairoSetSourceMacro(cr, obj)                                                                                   \
@@ -173,8 +184,9 @@ void FrameBuffer::PatternDestroy(size_t patternIndex) {
             return;                                                                                                    \
         }                                                                                                              \
         cairo_set_source(cr, obj->pattern[obj->usedPattern]);                                                          \
-    } else                                                                                                             \
-        cairo_set_source_rgb(cr, obj->r, obj->g, obj->b);
+    } else {                                                                                                           \
+        cairo_set_source_rgb(cr, obj->r, obj->g, obj->b);                                                              \
+    }
 
 void FrameBuffer::Fill() {
     cairo_t *cr = getDrawingContext(this);
@@ -182,6 +194,8 @@ void FrameBuffer::Fill() {
     cairoSetSourceMacro(cr, this);
     cairo_paint(cr);
     cairo_destroy(cr);
+
+    return;
 }
 
 void FrameBuffer::Line(double x0, double y0, double x1, double y1, double w) {
@@ -193,6 +207,8 @@ void FrameBuffer::Line(double x0, double y0, double x1, double y1, double w) {
     cairo_set_line_width(cr, w);
     cairo_stroke(cr);
     cairo_destroy(cr);
+
+    return;
 }
 
 void FrameBuffer::Rect(double x, double y, double w, double h, bool filled, double lineWidth) {
@@ -208,6 +224,8 @@ void FrameBuffer::Rect(double x, double y, double w, double h, bool filled, doub
         cairo_fill(cr);
 
     cairo_destroy(cr);
+
+    return;
 }
 
 void FrameBuffer::Circle(double x, double y, double radius, bool filled, double lineWidth) {
@@ -223,12 +241,16 @@ void FrameBuffer::Circle(double x, double y, double radius, bool filled, double 
         cairo_fill(cr);
 
     cairo_destroy(cr);
+
+    return;
 }
 
-void FrameBuffer::Font(std::string fontName, double fontSize = 12, bool fontBold = false) {
+void FrameBuffer::Font(std::string fontName, double fontSize, bool fontBold) {
     this->fontName = fontName.c_str();
     this->fontSize = fontSize;
     this->fontBold = fontBold;
+
+    return;
 }
 
 void FrameBuffer::Text(double x, double y, std::string text, bool textCentered, double textRotation, bool textRight) {
@@ -258,6 +280,8 @@ void FrameBuffer::Text(double x, double y, std::string text, bool textCentered, 
 
     cairo_show_text(cr, text.c_str());
     cairo_destroy(cr);
+
+    return;
 }
 
 void FrameBuffer::Image(double x, double y, std::string path) {
@@ -275,6 +299,8 @@ void FrameBuffer::Image(double x, double y, std::string path) {
 
     cairo_surface_destroy(image);
     cairo_destroy(cr);
+
+    return;
 }
 
 cairo_t *FrameBuffer::getDrawingContext(FrameBuffer *obj) {
